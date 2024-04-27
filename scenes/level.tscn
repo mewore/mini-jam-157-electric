@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://qwg468kolvc0"]
+
+[ext_resource type="TileSet" uid="uid://cwip84gcbrfrd" path="res://environment/maze.tres" id="1_i0gun"]
+
+[node name="Level" type="Node2D"]
+
+[node name="Game" type="Node2D" parent="."]
+
+[node name="Maze" type="TileMap" parent="Game"]
+tile_set = ExtResource("1_i0gun")
+format = 2
