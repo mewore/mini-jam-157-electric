@@ -1,3 +1,11 @@
-[gd_resource type="TileSet" format=3 uid="uid://cwip84gcbrfrd"]
+[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://cwip84gcbrfrd"]
+
+[ext_resource type="Texture2D" uid="uid://c8p556gpvdt2m" path="res://environment/wall.png" id="1_a3q43"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_l1stv"]
+resource_name = "wall"
+texture = ExtResource("1_a3q43")
+0:0/0 = 0
 
 [resource]
+sources/0 = SubResource("TileSetAtlasSource_l1stv")
