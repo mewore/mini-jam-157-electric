@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://qwg468kolvc0"]
+[gd_scene load_steps=4 format=3 uid="uid://qwg468kolvc0"]
 
 [ext_resource type="TileSet" uid="uid://cwip84gcbrfrd" path="res://environment/maze.tres" id="1_i0gun"]
 [ext_resource type="TileSet" uid="uid://dmb20lmspgd68" path="res://entities/wire/wire.tres" id="2_qj0hk"]
+[ext_resource type="PackedScene" uid="uid://dcnyteruynx54" path="res://entities/wire/wire_origin.tscn" id="3_vq8pd"]
 
 [node name="Level" type="Node2D"]
 
@@ -15,3 +16,6 @@ layer_0/tile_data = PackedInt32Array(0, 0, 0, 1179648, 0, 0, 65536, 0, 0, 131072
 [node name="Wire" type="TileMap" parent="Game"]
 tile_set = ExtResource("2_qj0hk")
 format = 2
+
+[node name="WireOrigin" parent="Game" instance=ExtResource("3_vq8pd")]
+position = Vector2(184, 136)
