@@ -26,14 +26,17 @@
 - [x] 💙 Fog of war enveloping everything more than 3 tiles away from the wire, the origin of the creatures and the clock
 - [x] 💙 Each creature walks around randomly, revealing a 1x1 area of the fog of war. They always prefer to explore or,
   if unable to explore, to return to spots closer to the origin.
+- [ ] 💙 The wire pieces light up
 - [ ] 💙 When creatures encounter the wire, they start gnawing on it. After some time, these parts of the wire are
   destroyed. Disconnected parts of the wire become unusable, but they can be reunited.
+- [ ] 💙💜 Clock entity
 - [ ] 💙 When creatures encounter the clock, they start gnawing on it. If they succeed, the level is lost.
+- [ ] 💙 When the player runs out of energy, the level is lost - there is a camera shake and the lights of the wire shut
+  down one by one
+- [ ] 💙 Over time, energy is lost.
 - [ ] 💙 Creature gnawing progress.
 - [ ] 💙 Hold {Space} to unleash an electric surge attack
 - [ ] 💜 Battery sprite
-- [ ] 💜 Clock sprite
-- [ ] 💙 Clock entity
 - [ ] 💙 If the wire is connected to the clock and the wire has enough power, the clock starts ticking and the power
   starts draining. The only way to stop this is to get disconnected.
 - [ ] 💙 If the clock is active for a total of 10 seconds, the level is won.
