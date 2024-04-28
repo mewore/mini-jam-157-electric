@@ -1,9 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://qwg468kolvc0"]
+[gd_scene load_steps=9 format=3 uid="uid://qwg468kolvc0"]
 
 [ext_resource type="Script" path="res://scenes/Game.gd" id="1_5wj7g"]
 [ext_resource type="TileSet" uid="uid://cwip84gcbrfrd" path="res://environment/maze.tres" id="1_i0gun"]
 [ext_resource type="PackedScene" uid="uid://c4kkhor2vh1ua" path="res://entities/wire/wire.tscn" id="3_0xj8b"]
 [ext_resource type="PackedScene" uid="uid://dcnyteruynx54" path="res://entities/wire/wire_origin.tscn" id="3_vq8pd"]
+[ext_resource type="PackedScene" uid="uid://bt47mcbo0mypw" path="res://entities/creature/rat.tscn" id="4_72u5q"]
 [ext_resource type="Texture2D" uid="uid://bd8ab55rr6n57" path="res://util/white-8x8.png" id="4_hobpb"]
 [ext_resource type="PackedScene" uid="uid://xcdbg8ki101v" path="res://ui/energy_used_particles.tscn" id="6_2sy8p"]
 [ext_resource type="PackedScene" uid="uid://n87jpoe4elxg" path="res://entities/creature/creature_origin.tscn" id="6_078l2"]
@@ -14,6 +15,7 @@
 script = ExtResource("1_5wj7g")
 energyUsedParticlesScene = ExtResource("6_2sy8p")
 creatureOriginScene = ExtResource("6_078l2")
+creatureScene = ExtResource("4_72u5q")
 
 [node name="Maze" type="TileMap" parent="Game"]
 tile_set = ExtResource("1_i0gun")
@@ -87,6 +89,11 @@ text = "100%"
 wait_time = 0.25
 autostart = true
 
+[node name="CreatureTimer" type="Timer" parent="Game"]
+wait_time = 8.0
+autostart = true
+
 [connection signal="grow" from="Game/Wire" to="Game" method="_on_wire_grow"]
 [connection signal="preview_changed" from="Game/Wire" to="Game" method="_on_wire_preview_changed"]
 [connection signal="timeout" from="Game/DrainTimer" to="Game" method="_on_drain_timer_timeout"]
+[connection signal="timeout" from="Game/CreatureTimer" to="Game" method="_on_creature_timer_timeout"]

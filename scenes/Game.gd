@@ -16,13 +16,22 @@ var energy: int = 0
 @export var creatureOriginScene: PackedScene
 @onready var creatureOrigin = get_node("CreatureOrigin") as Node2D
 
+var creatureSeedRng := RandomNumberGenerator.new()
+
 var creatureOrigins: Array[Vector2i] = []
 var creatureOriginDirections: Array[Vector2i] = []
+
+@export var creatureScene: PackedScene
+var nextCreatureOrigin = 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	set_energy(5)
 	wire.maxGrowth = energy
+	
+	print("scene_file_path = ", scene_file_path)
+	print("root scene_file_path = ", get_tree().current_scene.scene_file_path)
+	creatureSeedRng.seed = get_tree().current_scene.scene_file_path.hash()
 	
 	var mazeRect := maze.get_used_rect()
 	for x in range(mazeRect.position.x + 1, mazeRect.end.x - 1):
@@ -31,6 +40,8 @@ func _ready():
 	for y in range(mazeRect.position.y + 1, mazeRect.end.y - 1):
 		check_for_creature_origin(mazeRect, Vector2i(mazeRect.position.x, y), Vector2i.RIGHT)
 		check_for_creature_origin(mazeRect, Vector2i(mazeRect.end.x - 1, y), Vector2i.LEFT)
+	if creatureOrigins.is_empty():
+		get_node("CreatureTimer").queue_free()
 
 func check_for_creature_origin(mazeRect: Rect2i, cell: Vector2i, direction: Vector2i) -> void:
 	if not maze.get_cell_tile_data(0, cell):
@@ -92,3 +103,13 @@ func _on_drain_timer_timeout() -> void:
 		if battery.withWire and battery.frame > 0:
 			battery.frame -= 1
 			set_energy(energy + 1)
+
+
+func _on_creature_timer_timeout():
+	var creature := creatureScene.instantiate() as Creature
+	creature.rng.seed = creatureSeedRng.randi()
+	creature.startingCell = creatureOrigins[nextCreatureOrigin]
+	creature.direction = creatureOriginDirections[nextCreatureOrigin]
+	creature.maze = maze
+	add_child(creature)
+	nextCreatureOrigin = (nextCreatureOrigin + 1) % creatureOrigins.size()
