@@ -2,6 +2,8 @@ class_name Creature
 
 extends Node2D
 
+signal moved(cell: Vector2i)
+
 @export var speed := 1.0
 
 var startingCell: Vector2i
@@ -33,6 +35,7 @@ func _physics_process(delta: float) -> void:
 				randomize_directions()
 			pick_target_cell()
 			global_position = maze.to_global(maze.map_to_local(cell))
+			emit_signal("moved", cell)
 
 func randomize_directions() -> void:
 	directionOrder = []

@@ -24,6 +24,12 @@ var creatureOriginDirections: Array[Vector2i] = []
 @export var creatureScene: PackedScene
 var nextCreatureOrigin = 0
 
+@export var fogRevealParticleScene: PackedScene
+@onready var fog := get_node("Fog") as TileMap
+@export var REVEAL_RADIUS_AROUND_CREATURE_ORIGINS := 1
+@export var REVEAL_RADIUS_AROUND_CREATURES := 0
+@export var REVEAL_RADIUS_AROUND_WIRE := 2
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	set_energy(5)
@@ -34,6 +40,11 @@ func _ready():
 	creatureSeedRng.seed = get_tree().current_scene.scene_file_path.hash()
 	
 	var mazeRect := maze.get_used_rect()
+	
+	for x in range(mazeRect.position.x, mazeRect.end.x):
+		for y in range(mazeRect.position.y, mazeRect.end.y):
+			fog.set_cell(0, Vector2i(x, y), 0, Vector2i.ZERO)
+	
 	for x in range(mazeRect.position.x + 1, mazeRect.end.x - 1):
 		check_for_creature_origin(mazeRect, Vector2i(x, mazeRect.position.y), Vector2i.DOWN)
 		check_for_creature_origin(mazeRect, Vector2i(x, mazeRect.end.y - 1), Vector2i.UP)
@@ -42,6 +53,9 @@ func _ready():
 		check_for_creature_origin(mazeRect, Vector2i(mazeRect.end.x - 1, y), Vector2i.LEFT)
 	if creatureOrigins.is_empty():
 		get_node("CreatureTimer").queue_free()
+	
+	var originPos := (get_node("WireOrigin") as Node2D).global_position
+	reveal_fog(fog.local_to_map(fog.to_local(originPos)), REVEAL_RADIUS_AROUND_WIRE)
 
 func check_for_creature_origin(mazeRect: Rect2i, cell: Vector2i, direction: Vector2i) -> void:
 	if not maze.get_cell_tile_data(0, cell):
@@ -51,6 +65,7 @@ func check_for_creature_origin(mazeRect: Rect2i, cell: Vector2i, direction: Vect
 		var origin := creatureOriginScene.instantiate() as Node2D
 		add_child(origin)
 		origin.global_position = maze.to_global(maze.map_to_local(cell))
+		reveal_fog(cell, REVEAL_RADIUS_AROUND_CREATURE_ORIGINS)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -67,16 +82,12 @@ func set_energy(newEnergy: int) -> void:
 		var particlesCenter := energyBar.points[0] + Vector2(energyBarLength * (float(energy + newEnergy) / 2) / maxEnergy, 0)
 		particles.position = bottomBarParticlesContainer.to_local(energyBar.to_global(particlesCenter))
 		particles.emitting = true
-		particles.finished.connect(_on_particles_done.bind(particles))
+		particles.finished.connect(_on_particles_finished.bind(particles))
 		bottomBarParticlesContainer.add_child(particles)
 	energy = newEnergy
 	refresh_energy()
 	wire.maxGrowth = energy
 	wire.lastPreviewPos = wire.NONEXISTENT_MOUSE_POS
-
-func _on_particles_done(particles: Node) -> void:
-	particles.queue_free()
-	print("Particles done!")
 
 func refresh_energy() -> void:
 	energyBar.points = [
@@ -88,10 +99,11 @@ func refresh_energy() -> void:
 		energyBar.points[0] + Vector2.RIGHT * (energyBarLength * float(energy) / maxEnergy)
 	]
 
-func _on_wire_grow(amount: int) -> void:
-	print("Wire grew by [", amount, "]!")
-	set_energy(energy - amount)
-
+func _on_wire_grow(newCells: Array[Vector2i]) -> void:
+	print("Wire grew by [", newCells.size(), "]!")
+	set_energy(energy - newCells.size())
+	for cell in newCells:
+		reveal_fog(cell, REVEAL_RADIUS_AROUND_WIRE)
 
 func _on_wire_preview_changed() -> void:
 	refresh_energy()
@@ -104,6 +116,19 @@ func _on_drain_timer_timeout() -> void:
 			battery.frame -= 1
 			set_energy(energy + 1)
 
+func reveal_fog(around: Vector2i, radius: int) -> void:
+	for dx in range(-radius, radius + 1):
+		for dy in range(-radius, radius + 1):
+			var cell := around + Vector2i(dx, dy)
+			if fog.get_cell_tile_data(0, cell):
+				fog.erase_cell(0, cell)
+				if fogRevealParticleScene:
+					var particles := fogRevealParticleScene.instantiate() as CPUParticles2D
+					particles.color = fog.self_modulate
+					particles.position = fog.map_to_local(cell)
+					particles.emitting = true
+					particles.finished.connect(_on_particles_finished.bind(particles))
+					fog.add_child(particles)
 
 func _on_creature_timer_timeout():
 	var creature := creatureScene.instantiate() as Creature
@@ -111,5 +136,13 @@ func _on_creature_timer_timeout():
 	creature.startingCell = creatureOrigins[nextCreatureOrigin]
 	creature.direction = creatureOriginDirections[nextCreatureOrigin]
 	creature.maze = maze
+	creature.moved.connect(_on_creature_moved)
 	add_child(creature)
 	nextCreatureOrigin = (nextCreatureOrigin + 1) % creatureOrigins.size()
+
+
+func _on_creature_moved(cell: Vector2i) -> void:
+	reveal_fog(cell, REVEAL_RADIUS_AROUND_CREATURES)
+
+func _on_particles_finished(particles: Node) -> void:
+	particles.queue_free()

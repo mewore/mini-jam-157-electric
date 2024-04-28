@@ -2,10 +2,11 @@ class_name  Wire
 
 extends TileMap
 
-signal grow
-signal preview_changed
+signal grow(newCells: Vector2i)
+signal preview_changed()
 
 @export var maze: TileMap
+@export var fog: TileMap
 @export var origin: Node2D
 @onready var originPos = local_to_map(to_local(origin.global_position)) if origin else Vector2i.ZERO
 @onready var previewMap: TileMap = get_node("WirePreview")
@@ -53,7 +54,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		for battery in batteries:
 			if has_cell_at(self, local_to_map(battery.global_position)):
 				battery.withWire = true
-		emit_signal("grow", pathToPos.size())
+		emit_signal("grow", pathToPos)
 
 func preview_growth_to(at: Vector2i) -> void:
 	if at == lastPreviewPos:
@@ -69,7 +70,7 @@ func preview_growth_to(at: Vector2i) -> void:
 	emit_signal("preview_changed")
 
 func search_path_to(target: Vector2i) -> Array[Vector2i]:
-	if has_cell_at(maze, target):
+	if has_cell_at(maze, target) or has_cell_at(fog, target):
 		return []
 	var parents := Dictionary()
 	var distance := Dictionary()
@@ -92,7 +93,7 @@ func search_path_to(target: Vector2i) -> Array[Vector2i]:
 			var neighborsByEnergy := Dictionary()
 			for direction in NEIGHBOR_DIRECTIONS:
 				var neighbor = cell + direction
-				if neighbor not in parents and not has_cell_at(maze, neighbor):
+				if neighbor not in parents and not (has_cell_at(maze, neighbor) or has_cell_at(fog, neighbor)):
 					var energy = cellBatteryLevels.get(neighbor, 0)
 					if not neighborsByEnergy.has(energy):
 						neighborsByEnergy[energy] = []

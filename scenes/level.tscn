@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://qwg468kolvc0"]
+[gd_scene load_steps=11 format=3 uid="uid://qwg468kolvc0"]
 
 [ext_resource type="Script" path="res://scenes/Game.gd" id="1_5wj7g"]
 [ext_resource type="TileSet" uid="uid://cwip84gcbrfrd" path="res://environment/maze.tres" id="1_i0gun"]
@@ -6,8 +6,10 @@
 [ext_resource type="PackedScene" uid="uid://dcnyteruynx54" path="res://entities/wire/wire_origin.tscn" id="3_vq8pd"]
 [ext_resource type="PackedScene" uid="uid://bt47mcbo0mypw" path="res://entities/creature/rat.tscn" id="4_72u5q"]
 [ext_resource type="Texture2D" uid="uid://bd8ab55rr6n57" path="res://util/white-8x8.png" id="4_hobpb"]
+[ext_resource type="PackedScene" uid="uid://bbji3vlp6yttt" path="res://ui/fog_revealed_particles.tscn" id="5_3gopr"]
 [ext_resource type="PackedScene" uid="uid://xcdbg8ki101v" path="res://ui/energy_used_particles.tscn" id="6_2sy8p"]
 [ext_resource type="PackedScene" uid="uid://n87jpoe4elxg" path="res://entities/creature/creature_origin.tscn" id="6_078l2"]
+[ext_resource type="TileSet" uid="uid://brjmsxe57u6dt" path="res://environment/fog.tres" id="9_c3q1x"]
 
 [node name="Level" type="Node2D"]
 
@@ -16,13 +18,15 @@ script = ExtResource("1_5wj7g")
 energyUsedParticlesScene = ExtResource("6_2sy8p")
 creatureOriginScene = ExtResource("6_078l2")
 creatureScene = ExtResource("4_72u5q")
+fogRevealParticleScene = ExtResource("5_3gopr")
 
 [node name="Maze" type="TileMap" parent="Game"]
 tile_set = ExtResource("1_i0gun")
 format = 2
 
-[node name="Wire" parent="Game" node_paths=PackedStringArray("maze", "origin", "batteryContainer") instance=ExtResource("3_0xj8b")]
+[node name="Wire" parent="Game" node_paths=PackedStringArray("maze", "fog", "origin", "batteryContainer") instance=ExtResource("3_0xj8b")]
 maze = NodePath("../Maze")
+fog = NodePath("../Fog")
 origin = NodePath("../WireOrigin")
 batteryContainer = NodePath("../Batteries")
 
@@ -92,6 +96,12 @@ autostart = true
 [node name="CreatureTimer" type="Timer" parent="Game"]
 wait_time = 8.0
 autostart = true
+
+[node name="Fog" type="TileMap" parent="Game"]
+self_modulate = Color(0.0509804, 0, 0.101961, 1)
+z_index = 5
+tile_set = ExtResource("9_c3q1x")
+format = 2
 
 [connection signal="grow" from="Game/Wire" to="Game" method="_on_wire_grow"]
 [connection signal="preview_changed" from="Game/Wire" to="Game" method="_on_wire_preview_changed"]
