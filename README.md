@@ -19,7 +19,7 @@
 - [x] 💙💜 Simple maze tilemap
 - [x] 💙💜 Simple wire tilemap
 - [x] 💙 Energy meter; wire origin point
-- [ ] 💙 Clicking on a spot in the maze grows the wire up to it - the growth costs as much energy as the grown tiles
+- [x] 💙 Clicking on a spot in the maze grows the wire up to it - the growth costs as much energy as the grown tiles
 - [ ] 💙 Batteries, providing the wire with energy
 - [ ] 💙 Creature origin point
 - [ ] 💙💜 Creature

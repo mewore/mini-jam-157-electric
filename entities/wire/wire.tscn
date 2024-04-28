@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://c4kkhor2vh1ua"]
+
+[ext_resource type="TileSet" uid="uid://dmb20lmspgd68" path="res://entities/wire/wire.tres" id="1_no0k5"]
+[ext_resource type="Script" path="res://entities/wire/wire.gd" id="2_ncsa0"]
+
+[node name="Wire" type="TileMap"]
+tile_set = ExtResource("1_no0k5")
+format = 2
+script = ExtResource("2_ncsa0")
+
+[node name="WirePreview" type="TileMap" parent="."]
+self_modulate = Color(1, 1, 1, 0.333333)
+tile_set = ExtResource("1_no0k5")
+format = 2
