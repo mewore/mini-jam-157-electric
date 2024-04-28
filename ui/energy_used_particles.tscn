@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=3 uid="uid://xcdbg8ki101v"]
+
+[sub_resource type="Curve" id="Curve_p7g03"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[node name="EnergyUsedParticles" type="CPUParticles2D"]
+position = Vector2(272, 16)
+emitting = false
+amount = 100
+one_shot = true
+speed_scale = 0.7
+explosiveness = 1.0
+lifetime_randomness = 0.55
+emission_shape = 3
+emission_rect_extents = Vector2(10, 4)
+gravity = Vector2(0, 0)
+scale_amount_min = 0.5
+scale_amount_max = 4.0
+scale_amount_curve = SubResource("Curve_p7g03")
+color = Color(0.423529, 0.929412, 0.929412, 1)

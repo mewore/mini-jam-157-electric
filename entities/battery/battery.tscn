@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3 uid="uid://clv5lvyy7fs0p"]
+
+[ext_resource type="Texture2D" uid="uid://duu3nohprk65n" path="res://entities/battery/battery.png" id="1_e3m3m"]
+[ext_resource type="Script" path="res://entities/battery/battery.gd" id="2_h2ppc"]
+
+[sub_resource type="Curve" id="Curve_a6fsh"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[node name="Battery" type="Sprite2D"]
+texture = ExtResource("1_e3m3m")
+hframes = 5
+frame = 4
+script = ExtResource("2_h2ppc")
+
+[node name="CPUParticles2D" type="CPUParticles2D" parent="."]
+emitting = false
+amount = 25
+one_shot = true
+speed_scale = 0.7
+explosiveness = 1.0
+lifetime_randomness = 0.55
+emission_shape = 3
+emission_rect_extents = Vector2(7, 3)
+gravity = Vector2(0, -25)
+scale_amount_min = 0.5
+scale_amount_max = 4.0
+scale_amount_curve = SubResource("Curve_a6fsh")
+color = Color(0.423529, 0.929412, 0.929412, 1)
