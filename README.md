@@ -21,7 +21,7 @@
 - [x] 💙 Energy meter; wire origin point
 - [x] 💙 Clicking on a spot in the maze grows the wire up to it - the growth costs as much energy as the grown tiles
 - [x] 💙 Batteries, providing the wire with energy
-- [ ] 💙 Creature origin point
+- [x] 💙 Creature origin points
 - [ ] 💙💜 Creature
 - [ ] 💙 Fog of war enveloping everything more than 3 tiles away from the wire, the origin of the creatures and the clock
 - [ ] 💙 Each creature walks around randomly, revealing a 1x1 area of the fog of war. They always prefer to explore or,

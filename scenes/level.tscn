@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://qwg468kolvc0"]
+[gd_scene load_steps=8 format=3 uid="uid://qwg468kolvc0"]
 
 [ext_resource type="Script" path="res://scenes/Game.gd" id="1_5wj7g"]
 [ext_resource type="TileSet" uid="uid://cwip84gcbrfrd" path="res://environment/maze.tres" id="1_i0gun"]
@@ -6,12 +6,14 @@
 [ext_resource type="PackedScene" uid="uid://dcnyteruynx54" path="res://entities/wire/wire_origin.tscn" id="3_vq8pd"]
 [ext_resource type="Texture2D" uid="uid://bd8ab55rr6n57" path="res://util/white-8x8.png" id="4_hobpb"]
 [ext_resource type="PackedScene" uid="uid://xcdbg8ki101v" path="res://ui/energy_used_particles.tscn" id="6_2sy8p"]
+[ext_resource type="PackedScene" uid="uid://n87jpoe4elxg" path="res://entities/creature/creature_origin.tscn" id="6_078l2"]
 
 [node name="Level" type="Node2D"]
 
 [node name="Game" type="Node2D" parent="."]
 script = ExtResource("1_5wj7g")
 energyUsedParticlesScene = ExtResource("6_2sy8p")
+creatureOriginScene = ExtResource("6_078l2")
 
 [node name="Maze" type="TileMap" parent="Game"]
 tile_set = ExtResource("1_i0gun")
