@@ -3,19 +3,29 @@ extends Node2D
 @onready var energyBar := get_node("BottomBar/EnergyBar") as Line2D
 @onready var energyBarLength := energyBar.points[1].x - energyBar.points[0].x
 @onready var energyCostBar := get_node("BottomBar/EnergyCostBar") as Line2D
+@onready var shockChargeBar := get_node("BottomBar/ShockChargeBar") as Line2D
 
 @onready var maze := get_node("Maze") as TileMap
 @onready var wire := get_node("Wire") as Wire
 @onready var clock := get_node("Clock") as Sprite2D
 @onready var clockPos := maze.local_to_map(maze.to_local(clock.global_position))
+@onready var camera := get_node("Camera2D") as Camera2D
 
 var energy: int = 0
 @export var maxEnergy: int = 20
+@export var shockCost := 10
+var currentShockCharge: float = 0.0
+@export var shockChargeSpeed := 2.0
+@export var cameraShakeAmount := 1.0
+@export var cameraShakeAmplitude := 3.0
+@export var cameraShakeSpeedX := 500
+@export var cameraShakeSpeedY := 350
 
 @onready var energyLabel = get_node("BottomBar/Control/EnergyLabel") as Label
 
 @onready var bottomBarParticlesContainer := get_node("BottomBar/EnergyParticles") as Node2D
 @export var energyUsedParticlesScene: PackedScene
+@export var creatureExplosionParticlesScene: PackedScene
 
 @export var creatureOriginScene: PackedScene
 
@@ -41,6 +51,7 @@ var nextCreatureOrigin = 0
 func _ready():
 	set_energy(INITIAL_ENERGY)
 	wire.maxGrowth = energy
+	shockChargeBar.points = []
 	
 	print("scene_file_path = ", scene_file_path)
 	print("root scene_file_path = ", get_tree().current_scene.scene_file_path)
@@ -48,8 +59,8 @@ func _ready():
 	
 	var mazeRect := maze.get_used_rect()
 	
-	for x in range(mazeRect.position.x, mazeRect.end.x):
-		for y in range(mazeRect.position.y, mazeRect.end.y):
+	for x in range(mazeRect.position.x - 1, mazeRect.end.x + 1):
+		for y in range(mazeRect.position.y - 1, mazeRect.end.y + 4):
 			fog.set_cell(0, Vector2i(x, y), 0, Vector2i.ZERO)
 	
 	for x in range(mazeRect.position.x + 1, mazeRect.end.x - 1):
@@ -77,7 +88,39 @@ func check_for_creature_origin(mazeRect: Rect2i, cell: Vector2i, direction: Vect
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	pass
+	if Input.is_action_pressed("charge"):
+		shockChargeBar.visible = true
+		currentShockCharge = min(currentShockCharge + delta * shockChargeSpeed, min(shockCost, energy))
+		shockChargeBar.points = [
+			energyBar.points[0],
+			energyBar.points[0] + Vector2.RIGHT * (energyBarLength * float(currentShockCharge) / maxEnergy)
+		]
+		shockChargeBar.default_color = Color.BLACK if currentShockCharge < shockCost else Color.WHITE
+		cameraShakeAmount = max(cameraShakeAmount, currentShockCharge / shockCost * .25)
+	else:
+		shockChargeBar.visible = false
+		cameraShakeAmount = max(cameraShakeAmount - delta, 0.0)
+	var now := Time.get_ticks_msec() * .1
+	camera.offset = Vector2(cos(now * cameraShakeSpeedX), sin(now * cameraShakeSpeedY)) * (cameraShakeAmplitude * cameraShakeAmount * cameraShakeAmount)
+
+func _unhandled_key_input(event) -> void:
+	if event.is_action_released("charge"):
+		if currentShockCharge >= shockCost - .00001:
+			kill_wire_gnawers()
+			cameraShakeAmount = 1.0
+			set_energy(energy - shockCost)
+		currentShockCharge = 0.0
+		
+func kill_wire_gnawers():
+	for node in get_tree().get_nodes_in_group(Creature.CREATURE_GROUP):
+		if node is Creature:
+			if node.gnawing and node.wire.has_active_wire(node.cell):
+				var particles := creatureExplosionParticlesScene.instantiate() as CPUParticles2D
+				particles.emitting = true
+				particles.position = node.position
+				particles.finished.connect(_on_particles_finished.bind(particles))
+				add_child(particles)
+				node.queue_free()
 
 func set_energy(newEnergy: int) -> void:
 	if newEnergy <= 0 and not wire.has_battery_supply():

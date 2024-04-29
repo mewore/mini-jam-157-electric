@@ -1,0 +1,25 @@
+[gd_scene load_steps=2 format=3 uid="uid://dpf4navbyuwad"]
+
+[sub_resource type="Curve" id="Curve_p7g03"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[node name="CreatureExplosionParticles" type="CPUParticles2D"]
+emitting = false
+amount = 10
+one_shot = true
+speed_scale = 0.7
+explosiveness = 1.0
+lifetime_randomness = 0.55
+emission_shape = 3
+emission_rect_extents = Vector2(4, 4)
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_max = 78.55
+angular_velocity_min = -90.0
+angular_velocity_max = 90.0
+damping_max = 2.225
+scale_amount_min = 4.0
+scale_amount_max = 8.0
+scale_amount_curve = SubResource("Curve_p7g03")
+color = Color(0.309804, 0.0784314, 0.27451, 1)

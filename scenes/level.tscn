@@ -1,7 +1,8 @@
-[gd_scene load_steps=14 format=3 uid="uid://qwg468kolvc0"]
+[gd_scene load_steps=15 format=3 uid="uid://qwg468kolvc0"]
 
 [ext_resource type="Script" path="res://scenes/Game.gd" id="1_5wj7g"]
 [ext_resource type="TileSet" uid="uid://cwip84gcbrfrd" path="res://environment/maze.tres" id="1_i0gun"]
+[ext_resource type="PackedScene" uid="uid://dpf4navbyuwad" path="res://ui/creature_explosion_particles.tscn" id="3_0surv"]
 [ext_resource type="PackedScene" uid="uid://c4kkhor2vh1ua" path="res://entities/wire/wire.tscn" id="3_0xj8b"]
 [ext_resource type="PackedScene" uid="uid://dcnyteruynx54" path="res://entities/wire/wire_origin.tscn" id="3_vq8pd"]
 [ext_resource type="PackedScene" uid="uid://bt47mcbo0mypw" path="res://entities/creature/rat.tscn" id="4_72u5q"]
@@ -11,7 +12,7 @@
 [ext_resource type="PackedScene" uid="uid://n87jpoe4elxg" path="res://entities/creature/creature_origin.tscn" id="6_078l2"]
 [ext_resource type="TileSet" uid="uid://brjmsxe57u6dt" path="res://environment/fog.tres" id="9_c3q1x"]
 [ext_resource type="PackedScene" uid="uid://dar6mmh7o7bsj" path="res://entities/clock/clock.tscn" id="11_5g6d4"]
-[ext_resource type="FontFile" path="res://ui/fonts/lunchds.ttf" id="11_8tiah"]
+[ext_resource type="FontFile" uid="uid://cqpiob1pxgn68" path="res://ui/fonts/lunchds.ttf" id="11_8tiah"]
 
 [sub_resource type="Theme" id="Theme_028mw"]
 default_font = ExtResource("11_8tiah")
@@ -22,6 +23,7 @@ default_font_size = 16
 [node name="Game" type="Node2D" parent="."]
 script = ExtResource("1_5wj7g")
 energyUsedParticlesScene = ExtResource("6_2sy8p")
+creatureExplosionParticlesScene = ExtResource("3_0surv")
 creatureOriginScene = ExtResource("6_078l2")
 creatureScene = ExtResource("4_72u5q")
 fogRevealParticleScene = ExtResource("5_3gopr")
@@ -44,7 +46,15 @@ position = Vector2(184, 136)
 [node name="Clock" parent="Game" instance=ExtResource("11_5g6d4")]
 position = Vector2(248, 136)
 
+[node name="Fog" type="TileMap" parent="Game"]
+self_modulate = Color(0.0509804, 0, 0.101961, 1)
+z_index = 5
+tile_set = ExtResource("9_c3q1x")
+format = 2
+
 [node name="BottomBar" type="Node2D" parent="Game"]
+z_index = 10
+z_as_relative = false
 position = Vector2(0, 272)
 
 [node name="Background" type="Sprite2D" parent="Game/BottomBar"]
@@ -91,6 +101,12 @@ position = Vector2(60, 0)
 points = PackedVector2Array(128, 16, 256, 16)
 default_color = Color(0.431373, 0.317647, 0.505882, 1)
 
+[node name="ShockChargeBar" type="Line2D" parent="Game/BottomBar"]
+position = Vector2(60, 0)
+points = PackedVector2Array(128, 16, 256, 16)
+width = 5.0
+default_color = Color(0.027451, 0.0117647, 0.0392157, 1)
+
 [node name="EnergyParticles" type="Node2D" parent="Game/BottomBar"]
 
 [node name="Control" type="HBoxContainer" parent="Game/BottomBar"]
@@ -125,11 +141,8 @@ autostart = true
 wait_time = 8.0
 autostart = true
 
-[node name="Fog" type="TileMap" parent="Game"]
-self_modulate = Color(0.0509804, 0, 0.101961, 1)
-z_index = 5
-tile_set = ExtResource("9_c3q1x")
-format = 2
+[node name="Camera2D" type="Camera2D" parent="Game"]
+position = Vector2(256, 150)
 
 [connection signal="grow" from="Game/Wire" to="Game" method="_on_wire_grow"]
 [connection signal="preview_changed" from="Game/Wire" to="Game" method="_on_wire_preview_changed"]

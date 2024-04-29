@@ -35,7 +35,7 @@
 - [x] 💙 When the player runs out of energy, the level is lost - ~~there is a camera shake and the lights of the wire
   shut down one by one~~
 - [x] 💙 Creature gnawing progress.
-- [ ] 💙 Hold {Space} to unleash an electric surge attack
+- [x] 💙 Hold {Space} to unleash an electric surge attack
 - [ ] 💜 Battery sprite
 - [ ] 💙 If the wire is connected to the clock and the wire has enough power, the clock starts ticking and the power
   starts draining. The only way to stop this is to get disconnected.
