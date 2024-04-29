@@ -45,7 +45,7 @@
 
 ### Basic features
 
-- [ ] 💙 Main menu (just with a Play button)
+- [x] 💙 Main menu (just with a Play button)
 - [ ] 💙 Pausing (just "press Esc to continue")
 - [ ] 💙 Main menu: Volume controls
 - [ ] 💙 Entity instructions at the bottom of the screen when hovering over an entity
@@ -73,7 +73,7 @@
 ### Advanced features
 
 - [ ] 💜 Cover art
-- [ ] 💜 Main menu art
+- [x] 💜 Main menu art
 - [ ] 💙 Pause menu: Restart button
 - [ ] 💙 Pause menu: Volume controls
 - [ ] 💙 The camera shakes when there is an electric surge attack
