@@ -79,7 +79,8 @@ func search_path_to(target: Vector2i) -> Array[Vector2i]:
 		return []
 	var parents := Dictionary()
 	var distance := Dictionary()
-	var queue: Array[Vector2i] = get_used_cells(LAYER)
+	var queue: Array[Vector2i] = get_powered_cells()
+	print("Queue: ", queue)
 	for cell in queue:
 		parents[cell] = false
 		distance[cell] = 0
@@ -91,6 +92,7 @@ func search_path_to(target: Vector2i) -> Array[Vector2i]:
 		var cell = local_to_map(to_local(battery.global_position))
 		cellBatteryLevels[cell] = cellBatteryLevels.get(cell, 0) + battery.frame
 	
+	var mazeRect := maze.get_used_rect()
 	while queue:
 		var oldQueue := queue
 		queue = []
@@ -98,7 +100,7 @@ func search_path_to(target: Vector2i) -> Array[Vector2i]:
 			var neighborsByEnergy := Dictionary()
 			for direction in NEIGHBOR_DIRECTIONS:
 				var neighbor = cell + direction
-				if neighbor not in parents and not (has_cell_at(maze, neighbor) or has_cell_at(fog, neighbor)):
+				if neighbor not in parents and mazeRect.has_point(neighbor) and not (has_cell_at(maze, neighbor) or has_cell_at(fog, neighbor)):
 					var energy = cellBatteryLevels.get(neighbor, 0)
 					if not neighborsByEnergy.has(energy):
 						neighborsByEnergy[energy] = []
@@ -125,6 +127,21 @@ func search_path_to(target: Vector2i) -> Array[Vector2i]:
 	result.reverse()
 	return result
 
+func remove_wire_at(at: Vector2i) -> void:
+	set_wire_cell(self, at, false)
+	previewMap.clear()
+	lastPreviewPos = NONEXISTENT_MOUSE_POS
+	refresh_cells_to_light_up()
+	var poweredCells := Dictionary()
+	for cell in get_powered_cells():
+		poweredCells[cell] = true
+	for cell in get_used_cells(LAYER):
+		if cell not in poweredCells:
+			var coords = get_cell_atlas_coords(LAYER, cell)
+			if coords.x & IS_LIT_UP_BIT:
+				coords.x ^= IS_LIT_UP_BIT
+				set_cell(LAYER, cell, 0, coords)
+
 func has_cell_at(map: TileMap, at: Vector2i) -> bool:
 	if not map:
 		return false
@@ -132,8 +149,11 @@ func has_cell_at(map: TileMap, at: Vector2i) -> bool:
 		return true
 	return false
 
-func set_wire_cell(map: TileMap, at: Vector2i) -> void:
-	map.set_cell(LAYER, at, 0, Vector2i.ZERO)
+func set_wire_cell(map: TileMap, at: Vector2i, present: bool = true) -> void:
+	if present:
+		map.set_cell(LAYER, at, 0, Vector2i.ZERO)
+	else:
+		map.set_cell(LAYER, at, -1)
 	update_wire_cell(map, at)
 	for direction in NEIGHBOR_DIRECTIONS:
 		update_wire_cell(map, at + direction)
@@ -166,6 +186,28 @@ func refresh_cells_to_light_up() -> void:
 		if cellsToLightUp:
 			cellGroupsToLightUp.append(cellsToLightUp)
 	cellGroupsToLightUp.reverse()
+
+func get_powered_cells() -> Array[Vector2i]:
+	var queue: Array[Vector2i] = [originPos]
+	var visited := Dictionary()
+	var result: Array[Vector2i] = []
+	while queue:
+		result.append_array(queue)
+		var oldQueue = queue
+		queue = []
+		for cell in oldQueue:
+			for direction in NEIGHBOR_DIRECTIONS:
+				var neighbor = cell + direction
+				if neighbor not in visited and has_cell_at(self, neighbor):
+					visited[neighbor] = true
+					queue.append(neighbor)
+	return result
+
+func has_active_wire(cell: Vector2i) -> bool:
+	return has_cell_at(self, cell) and get_cell_atlas_coords(LAYER, cell).x & IS_LIT_UP_BIT
+
+func has_inactive_wire(cell: Vector2i) -> bool:
+	return has_cell_at(self, cell) and not (get_cell_atlas_coords(LAYER, cell).x & IS_LIT_UP_BIT)
 
 func _on_light_up_timer_timeout() -> void:
 	if cellGroupsToLightUp.is_empty():

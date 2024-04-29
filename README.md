@@ -27,10 +27,11 @@
 - [x] 💙 Each creature walks around randomly, revealing a 1x1 area of the fog of war. They always prefer to explore or,
   if unable to explore, to return to spots closer to the origin.
 - [x] 💙 The wire pieces light up
-- [ ] 💙 When creatures encounter the wire, they start gnawing on it. After some time, these parts of the wire are
+- [x] 💙 When creatures encounter the wire, they start gnawing on it. After some time, these parts of the wire are
   destroyed. Disconnected parts of the wire become unusable, but they can be reunited.
 - [ ] 💙💜 Clock entity
-- [ ] 💙 When creatures encounter the clock, they start gnawing on it. If they succeed, the level is lost.
+- [ ] 💙 When creatures encounter the clock, they start gnawing on it. If they succeed, the level is lost. The player
+  loses if a creature eats the wire origin.
 - [ ] 💙 When the player runs out of energy, the level is lost - there is a camera shake and the lights of the wire shut
   down one by one
 - [ ] 💙 Over time, energy is lost.
@@ -73,7 +74,6 @@
 ### Advanced features
 
 - [ ] 💜 Cover art
-- [ ] 💜 Main menu art
 - [ ] 💜 Main menu art
 - [ ] 💙 Pause menu: Restart button
 - [ ] 💙 Pause menu: Volume controls

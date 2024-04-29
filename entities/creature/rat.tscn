@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://bt47mcbo0mypw"]
+[gd_scene load_steps=6 format=3 uid="uid://bt47mcbo0mypw"]
 
 [ext_resource type="Script" path="res://entities/creature/creature.gd" id="1_2r56i"]
 [ext_resource type="Texture2D" uid="uid://bwyyc1yphbtly" path="res://entities/creature/rat.png" id="1_l84k3"]
+[ext_resource type="Texture2D" uid="uid://28ad2q2i0nkg" path="res://entities/creature/gnaw-timer.png" id="3_bi0ov"]
 
 [sub_resource type="Animation" id="Animation_38to8"]
 resource_name = "scuttle"
@@ -37,3 +38,15 @@ libraries = {
 "": SubResource("AnimationLibrary_cl8ai")
 }
 autoplay = "scuttle"
+
+[node name="GnawTimer" type="Timer" parent="."]
+wait_time = 0.2
+
+[node name="GnawTimerSprite" type="Sprite2D" parent="."]
+z_index = 5
+z_as_relative = false
+position = Vector2(0, -8)
+texture = ExtResource("3_bi0ov")
+vframes = 15
+
+[connection signal="timeout" from="GnawTimer" to="." method="_on_gnaw_timer_timeout"]

@@ -14,7 +14,6 @@ var energy: int = 0
 @export var energyUsedParticlesScene: PackedScene
 
 @export var creatureOriginScene: PackedScene
-@onready var creatureOrigin = get_node("CreatureOrigin") as Node2D
 
 var creatureSeedRng := RandomNumberGenerator.new()
 
@@ -136,13 +135,18 @@ func _on_creature_timer_timeout():
 	creature.startingCell = creatureOrigins[nextCreatureOrigin]
 	creature.direction = creatureOriginDirections[nextCreatureOrigin]
 	creature.maze = maze
+	creature.wire = wire
 	creature.moved.connect(_on_creature_moved)
+	creature.ate_through.connect(_on_creature_ate_through)
 	add_child(creature)
 	nextCreatureOrigin = (nextCreatureOrigin + 1) % creatureOrigins.size()
 
 
 func _on_creature_moved(cell: Vector2i) -> void:
 	reveal_fog(cell, REVEAL_RADIUS_AROUND_CREATURES)
+
+func _on_creature_ate_through(cell: Vector2i) -> void:
+	wire.remove_wire_at(cell)
 
 func _on_particles_finished(particles: Node) -> void:
 	particles.queue_free()
