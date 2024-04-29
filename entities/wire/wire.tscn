@@ -17,4 +17,6 @@ format = 2
 wait_time = 0.1
 autostart = true
 
+[node name="ClockTimer" type="Timer" parent="."]
+
 [connection signal="timeout" from="LightUpTimer" to="." method="_on_light_up_timer_timeout"]

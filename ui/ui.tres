@@ -1,0 +1,7 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://c57bqhed05hkt"]
+
+[ext_resource type="FontFile" uid="uid://cqpiob1pxgn68" path="res://ui/fonts/lunchds.ttf" id="1_0itnp"]
+
+[resource]
+default_font = ExtResource("1_0itnp")
+default_font_size = 16
