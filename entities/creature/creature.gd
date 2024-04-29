@@ -27,7 +27,10 @@ func _ready():
 
 func _physics_process(delta: float) -> void:
 	if cell != targetCell:
+		var lastUntilTarget = untilTarget
 		untilTarget -= speed * delta
+		if untilTarget <= 0.5 and lastUntilTarget > 0.5:
+			emit_signal("moved", targetCell)
 		if untilTarget <= 0.0:
 			cell = targetCell
 			if cell == startingCell:
@@ -35,7 +38,6 @@ func _physics_process(delta: float) -> void:
 				randomize_directions()
 			pick_target_cell()
 			global_position = maze.to_global(maze.map_to_local(cell))
-			emit_signal("moved", cell)
 
 func randomize_directions() -> void:
 	directionOrder = []

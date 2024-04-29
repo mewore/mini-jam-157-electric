@@ -12,3 +12,9 @@ script = ExtResource("2_ncsa0")
 self_modulate = Color(1, 1, 1, 0.333333)
 tile_set = ExtResource("1_no0k5")
 format = 2
+
+[node name="LightUpTimer" type="Timer" parent="."]
+wait_time = 0.25
+autostart = true
+
+[connection signal="timeout" from="LightUpTimer" to="." method="_on_light_up_timer_timeout"]

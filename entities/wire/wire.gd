@@ -8,7 +8,7 @@ signal preview_changed()
 @export var maze: TileMap
 @export var fog: TileMap
 @export var origin: Node2D
-@onready var originPos = local_to_map(to_local(origin.global_position)) if origin else Vector2i.ZERO
+@onready var originPos := local_to_map(to_local(origin.global_position)) if origin else Vector2i.ZERO
 @onready var previewMap: TileMap = get_node("WirePreview")
 @export var batteryContainer: Node
 var batteries: Array[Battery] = []
@@ -27,6 +27,10 @@ var NEIGHBOR_DIRECTIONS: Array[Vector2i] = [
 	Vector2i(0, 1),
 	Vector2i(0, -1),
 ]
+
+const IS_LIT_UP_BIT = 1 << 2
+var cellLightUpEvents
+var cellGroupsToLightUp: Array = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -54,6 +58,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		for battery in batteries:
 			if has_cell_at(self, local_to_map(battery.global_position)):
 				battery.withWire = true
+		refresh_cells_to_light_up()
 		emit_signal("grow", pathToPos)
 
 func preview_growth_to(at: Vector2i) -> void:
@@ -138,4 +143,33 @@ func update_wire_cell(map: TileMap, at: Vector2i) -> void:
 		return
 	var atlasCol: int = int(has_cell_at(map, at + Vector2i.RIGHT)) | (int(has_cell_at(map, at + Vector2i.LEFT)) << 1)
 	var atlasRow: int = int(has_cell_at(map, at + Vector2i.DOWN)) | (int(has_cell_at(map, at + Vector2i.UP)) << 1)
-	map.set_cell(LAYER, at, 0, Vector2i(atlasCol, atlasRow))
+	var atlasCoords := map.get_cell_atlas_coords(LAYER, at)
+	map.set_cell(LAYER, at, 0, Vector2i(atlasCol | (atlasCoords.x & IS_LIT_UP_BIT), atlasRow))
+
+func refresh_cells_to_light_up() -> void:
+	var queue: Array[Vector2i] = [originPos]
+	var visited := Dictionary()
+	cellGroupsToLightUp = []
+	while queue:
+		var oldQueue = queue
+		var cellsToLightUp: Array[Vector2i] = []
+		queue = []
+		for cell in oldQueue:
+			for direction in NEIGHBOR_DIRECTIONS:
+				var neighbor = cell + direction
+				if neighbor not in visited and has_cell_at(self, neighbor):
+					var atlasCoords := get_cell_atlas_coords(LAYER, neighbor)
+					if not (atlasCoords.x & IS_LIT_UP_BIT):
+						cellsToLightUp.append(neighbor)
+					visited[neighbor] = true
+					queue.append(neighbor)
+		if cellsToLightUp:
+			cellGroupsToLightUp.append(cellsToLightUp)
+	cellGroupsToLightUp.reverse()
+
+func _on_light_up_timer_timeout() -> void:
+	if cellGroupsToLightUp.is_empty():
+		return
+	for cell in cellGroupsToLightUp.pop_back() as Array[Vector2i]:
+		var atlasCoords := get_cell_atlas_coords(LAYER, cell)
+		set_cell(LAYER, cell, 0, Vector2i(atlasCoords.x | IS_LIT_UP_BIT, atlasCoords.y))

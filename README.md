@@ -26,7 +26,7 @@
 - [x] 💙 Fog of war enveloping everything more than 3 tiles away from the wire, the origin of the creatures and the clock
 - [x] 💙 Each creature walks around randomly, revealing a 1x1 area of the fog of war. They always prefer to explore or,
   if unable to explore, to return to spots closer to the origin.
-- [ ] 💙 The wire pieces light up
+- [x] 💙 The wire pieces light up
 - [ ] 💙 When creatures encounter the wire, they start gnawing on it. After some time, these parts of the wire are
   destroyed. Disconnected parts of the wire become unusable, but they can be reunited.
 - [ ] 💙💜 Clock entity
