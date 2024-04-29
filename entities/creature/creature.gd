@@ -7,6 +7,7 @@ signal ate_through(cell: Vector2i)
 
 @export var speed := 2.0
 
+var clockPos: Vector2i
 var startingCell: Vector2i
 var direction: Vector2i
 var maze: TileMap
@@ -52,6 +53,7 @@ func _physics_process(delta: float) -> void:
 				depthMap = {cell: 0}
 				randomize_directions()
 			if cell == wire.originPos or \
+					cell == clockPos or \
 					(wire.has_active_wire(cell) and not cell_has_gnawing_creatures(cell) and gnawChance > rng.randf()) or \
 					(wire.has_inactive_wire(cell) and not cell_has_gnawing_creatures(cell) and deadWireGnawChance > rng.randf()):
 				gnawing = true

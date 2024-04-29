@@ -80,7 +80,6 @@ func search_path_to(target: Vector2i) -> Array[Vector2i]:
 	var parents := Dictionary()
 	var distance := Dictionary()
 	var queue: Array[Vector2i] = get_powered_cells()
-	print("Queue: ", queue)
 	for cell in queue:
 		parents[cell] = false
 		distance[cell] = 0

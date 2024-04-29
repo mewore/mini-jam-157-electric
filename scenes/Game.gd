@@ -6,6 +6,8 @@ extends Node2D
 
 @onready var maze := get_node("Maze") as TileMap
 @onready var wire := get_node("Wire") as Wire
+@onready var clock := get_node("Clock") as Sprite2D
+@onready var clockPos := maze.local_to_map(maze.to_local(clock.global_position))
 
 var energy: int = 0
 @export var maxEnergy: int = 20
@@ -28,6 +30,7 @@ var nextCreatureOrigin = 0
 @export var REVEAL_RADIUS_AROUND_CREATURE_ORIGINS := 1
 @export var REVEAL_RADIUS_AROUND_CREATURES := 0
 @export var REVEAL_RADIUS_AROUND_WIRE := 2
+@export var REVEAL_RADIUS_AROUND_CLOCK := 1
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -55,6 +58,7 @@ func _ready():
 	
 	var originPos := (get_node("WireOrigin") as Node2D).global_position
 	reveal_fog(fog.local_to_map(fog.to_local(originPos)), REVEAL_RADIUS_AROUND_WIRE)
+	reveal_fog(clockPos, REVEAL_RADIUS_AROUND_CLOCK)
 
 func check_for_creature_origin(mazeRect: Rect2i, cell: Vector2i, direction: Vector2i) -> void:
 	if not maze.get_cell_tile_data(0, cell):
@@ -131,6 +135,7 @@ func reveal_fog(around: Vector2i, radius: int) -> void:
 
 func _on_creature_timer_timeout():
 	var creature := creatureScene.instantiate() as Creature
+	creature.clockPos = clockPos
 	creature.rng.seed = creatureSeedRng.randi()
 	creature.startingCell = creatureOrigins[nextCreatureOrigin]
 	creature.direction = creatureOriginDirections[nextCreatureOrigin]
@@ -146,6 +151,16 @@ func _on_creature_moved(cell: Vector2i) -> void:
 	reveal_fog(cell, REVEAL_RADIUS_AROUND_CREATURES)
 
 func _on_creature_ate_through(cell: Vector2i) -> void:
+	if cell == clockPos:
+		print("YOW! Ate through the clock...")
+		get_tree().reload_current_scene()
+		return
+
+	if cell == wire.originPos:
+		print("YOW! Ate through the origin...")
+		get_tree().reload_current_scene()
+		return
+	
 	wire.remove_wire_at(cell)
 
 func _on_particles_finished(particles: Node) -> void:

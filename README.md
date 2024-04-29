@@ -29,9 +29,9 @@
 - [x] 💙 The wire pieces light up
 - [x] 💙 When creatures encounter the wire, they start gnawing on it. After some time, these parts of the wire are
   destroyed. Disconnected parts of the wire become unusable, but they can be reunited.
-- [ ] 💙💜 Clock entity
-- [ ] 💙 When creatures encounter the clock, they start gnawing on it. If they succeed, the level is lost. The player
-  loses if a creature eats the wire origin.
+- [x] 💙💜 Clock entity
+- [x] 💙 When creatures encounter the clock, they start gnawing on it. If they succeed, the level is lost. The player
+  can also lose if a creature eats the wire origin.
 - [ ] 💙 When the player runs out of energy, the level is lost - there is a camera shake and the lights of the wire shut
   down one by one
 - [ ] 💙 Over time, energy is lost.

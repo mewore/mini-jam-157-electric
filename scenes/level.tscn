@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://qwg468kolvc0"]
+[gd_scene load_steps=12 format=3 uid="uid://qwg468kolvc0"]
 
 [ext_resource type="Script" path="res://scenes/Game.gd" id="1_5wj7g"]
 [ext_resource type="TileSet" uid="uid://cwip84gcbrfrd" path="res://environment/maze.tres" id="1_i0gun"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://xcdbg8ki101v" path="res://ui/energy_used_particles.tscn" id="6_2sy8p"]
 [ext_resource type="PackedScene" uid="uid://n87jpoe4elxg" path="res://entities/creature/creature_origin.tscn" id="6_078l2"]
 [ext_resource type="TileSet" uid="uid://brjmsxe57u6dt" path="res://environment/fog.tres" id="9_c3q1x"]
+[ext_resource type="PackedScene" uid="uid://dar6mmh7o7bsj" path="res://entities/clock/clock.tscn" id="11_5g6d4"]
 
 [node name="Level" type="Node2D"]
 
@@ -34,6 +35,9 @@ batteryContainer = NodePath("../Batteries")
 
 [node name="WireOrigin" parent="Game" instance=ExtResource("3_vq8pd")]
 position = Vector2(184, 136)
+
+[node name="Clock" parent="Game" instance=ExtResource("11_5g6d4")]
+position = Vector2(248, 136)
 
 [node name="BottomBar" type="Node2D" parent="Game"]
 position = Vector2(0, 272)

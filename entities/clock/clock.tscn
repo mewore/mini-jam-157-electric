@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://dar6mmh7o7bsj"]
+
+[ext_resource type="Texture2D" uid="uid://dr7sutuygp2fv" path="res://entities/clock/clock.png" id="1_hriam"]
+[ext_resource type="Texture2D" uid="uid://csno5wgeaiutl" path="res://entities/clock/z.png" id="2_wnyuv"]
+
+[sub_resource type="Curve" id="Curve_ntmb2"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.805556, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[node name="Clock" type="Sprite2D"]
+texture = ExtResource("1_hriam")
+hframes = 4
+
+[node name="CPUParticles2D" type="CPUParticles2D" parent="."]
+amount = 2
+speed_scale = 0.25
+texture = ExtResource("2_wnyuv")
+gravity = Vector2(0, -50)
+tangential_accel_min = -25.0
+tangential_accel_max = 25.0
+scale_amount_min = 0.5
+scale_amount_curve = SubResource("Curve_ntmb2")
