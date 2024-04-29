@@ -9,6 +9,8 @@ signal preview_changed()
 @export var fog: TileMap
 @export var origin: Node2D
 @onready var originPos := local_to_map(to_local(origin.global_position)) if origin else Vector2i.ZERO
+@export var clock: Clock
+@onready var clockPos = local_to_map(to_local(clock.global_position))
 @onready var previewMap: TileMap = get_node("WirePreview")
 @export var batteryContainer: Node
 var batteries: Array[Battery] = []
@@ -198,6 +200,12 @@ func refresh_powered_cells() -> void:
 	
 	for battery in batteries:
 		battery.withWire = has_active_wire(local_to_map(to_local(battery.global_position)))
+	
+	if has_active_wire(clockPos):
+		clock.wake_up()
+	else:
+		clock.go_to_sleep()
+	
 
 func has_active_wire(cell: Vector2i) -> bool:
 	return cell in poweredCellsDict

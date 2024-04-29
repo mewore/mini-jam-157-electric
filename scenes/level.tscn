@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://qwg468kolvc0"]
+[gd_scene load_steps=15 format=3 uid="uid://qwg468kolvc0"]
 
 [ext_resource type="Script" path="res://scenes/Game.gd" id="1_5wj7g"]
 [ext_resource type="TileSet" uid="uid://cwip84gcbrfrd" path="res://environment/maze.tres" id="1_i0gun"]
@@ -13,6 +13,7 @@
 [ext_resource type="TileSet" uid="uid://brjmsxe57u6dt" path="res://environment/fog.tres" id="9_c3q1x"]
 [ext_resource type="PackedScene" uid="uid://dar6mmh7o7bsj" path="res://entities/clock/clock.tscn" id="11_5g6d4"]
 [ext_resource type="Theme" uid="uid://c57bqhed05hkt" path="res://ui/ui.tres" id="13_l2l0r"]
+[ext_resource type="Texture2D" uid="uid://cx4otsqee0n7h" path="res://ui/clock.png" id="14_eucm1"]
 
 [node name="Level" type="Node2D"]
 
@@ -28,10 +29,11 @@ fogRevealParticleScene = ExtResource("5_3gopr")
 tile_set = ExtResource("1_i0gun")
 format = 2
 
-[node name="Wire" parent="Game" node_paths=PackedStringArray("maze", "fog", "origin", "batteryContainer") instance=ExtResource("3_0xj8b")]
+[node name="Wire" parent="Game" node_paths=PackedStringArray("maze", "fog", "origin", "clock", "batteryContainer") instance=ExtResource("3_0xj8b")]
 maze = NodePath("../Maze")
 fog = NodePath("../Fog")
 origin = NodePath("../WireOrigin")
+clock = NodePath("../Clock")
 batteryContainer = NodePath("../Batteries")
 
 [node name="Batteries" type="Node2D" parent="Game"]
@@ -129,6 +131,22 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.654902, 0.960784, 0.933333, 1)
 text = "50/50"
 
+[node name="PaddingRight" type="Control" parent="Game/BottomBar/Control"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ClockLabel" type="Label" parent="Game/BottomBar/Control"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.654902, 0.960784, 0.933333, 1)
+text = "10
+"
+
+[node name="Clock" type="Sprite2D" parent="Game/BottomBar"]
+position = Vector2(480, 16)
+texture = ExtResource("14_eucm1")
+hframes = 11
+frame = 10
+
 [node name="DrainTimer" type="Timer" parent="Game"]
 wait_time = 0.25
 autostart = true
@@ -140,7 +158,13 @@ autostart = true
 [node name="Camera2D" type="Camera2D" parent="Game"]
 position = Vector2(256, 150)
 
+[node name="WinTimer" type="Timer" parent="Game"]
+wait_time = 5.0
+one_shot = true
+
 [connection signal="grow" from="Game/Wire" to="Game" method="_on_wire_grow"]
 [connection signal="preview_changed" from="Game/Wire" to="Game" method="_on_wire_preview_changed"]
+[connection signal="second_passed" from="Game/Clock" to="Game" method="_on_clock_second_passed"]
 [connection signal="timeout" from="Game/DrainTimer" to="Game" method="_on_drain_timer_timeout"]
 [connection signal="timeout" from="Game/CreatureTimer" to="Game" method="_on_creature_timer_timeout"]
+[connection signal="timeout" from="Game/WinTimer" to="Game" method="_on_win_timer_timeout"]

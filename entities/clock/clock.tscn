@@ -1,13 +1,210 @@
-[gd_scene load_steps=4 format=3 uid="uid://dar6mmh7o7bsj"]
+[gd_scene load_steps=10 format=3 uid="uid://dar6mmh7o7bsj"]
 
 [ext_resource type="Texture2D" uid="uid://dr7sutuygp2fv" path="res://entities/clock/clock.png" id="1_hriam"]
+[ext_resource type="Script" path="res://entities/clock/clock.gd" id="2_o744r"]
 [ext_resource type="Texture2D" uid="uid://csno5wgeaiutl" path="res://entities/clock/z.png" id="2_wnyuv"]
 
 [sub_resource type="Curve" id="Curve_ntmb2"]
 _data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.805556, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
 point_count = 3
 
-[node name="Clock" type="Sprite2D"]
+[sub_resource type="Animation" id="Animation_i20al"]
+resource_name = "sleep"
+length = 10.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../CPUParticles2D:emitting")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [0, 1]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(-2, -2),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, 0.5)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath(".:scale")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(-2, -2),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(1, 0.9375)]
+}
+
+[sub_resource type="Animation" id="Animation_x7wey"]
+resource_name = "woke"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../CPUParticles2D:emitting")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [2]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(0.5, 1),
+"update": 0,
+"values": [Vector2(0, -2.5), Vector2(0, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath(".:scale")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(0.5, 1),
+"update": 0,
+"values": [Vector2(1, 1.3125), Vector2(1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_ywb0a"]
+resource_name = "ring"
+length = 4.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../CPUParticles2D:emitting")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1.9),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [2, 3]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 1.3, 1.9, 2, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 4, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 5, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 6, 6.1),
+"transitions": PackedFloat32Array(-2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, -4), Vector2(0, -4), Vector2(-4, -4), Vector2(4, -4), Vector2(-4, -4), Vector2(4, -4), Vector2(-4, -4), Vector2(4, -4), Vector2(-4, -4), Vector2(4, -4), Vector2(-4, -4), Vector2(4, -4), Vector2(-4, -4), Vector2(4, -4), Vector2(-4, -4), Vector2(4, -4), Vector2(-4, -4), Vector2(4, -4), Vector2(-4, -4), Vector2(4, -4), Vector2(-4, -4), Vector2(4, -4), Vector2(-4, -4), Vector2(4, -4), Vector2(-4, -4), Vector2(4, -4), Vector2(-4, -4), Vector2(4, -4), Vector2(-4, -4), Vector2(4, -4), Vector2(-4, -4), Vector2(4, -4), Vector2(-4, -4), Vector2(4, -4), Vector2(-4, -4), Vector2(4, -4), Vector2(-4, -4), Vector2(4, -4), Vector2(-4, -4), Vector2(4, -4), Vector2(-4, -4), Vector2(4, -4), Vector2(-4, -4), Vector2(4, -4)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath(".:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(),
+"transitions": PackedFloat32Array(),
+"update": 0,
+"values": []
+}
+
+[sub_resource type="Animation" id="Animation_wmnko"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, -8)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_y0ttw"]
+_data = {
+"RESET": SubResource("Animation_wmnko"),
+"ring": SubResource("Animation_ywb0a"),
+"sleep": SubResource("Animation_i20al"),
+"woke": SubResource("Animation_x7wey")
+}
+
+[node name="Clock" type="Node2D"]
+script = ExtResource("2_o744r")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+position = Vector2(0, -8)
 texture = ExtResource("1_hriam")
 hframes = 4
 
@@ -20,3 +217,14 @@ tangential_accel_min = -25.0
 tangential_accel_max = 25.0
 scale_amount_min = 0.5
 scale_amount_curve = SubResource("Curve_ntmb2")
+
+[node name="Second" type="Timer" parent="."]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+root_node = NodePath("../Sprite")
+libraries = {
+"": SubResource("AnimationLibrary_y0ttw")
+}
+autoplay = "sleep"
+
+[connection signal="timeout" from="Second" to="." method="_on_second_timeout"]

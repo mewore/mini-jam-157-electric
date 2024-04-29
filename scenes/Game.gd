@@ -7,8 +7,10 @@ extends Node2D
 
 @onready var maze := get_node("Maze") as TileMap
 @onready var wire := get_node("Wire") as Wire
-@onready var clock := get_node("Clock") as Sprite2D
+@onready var clock := get_node("Clock") as Clock
 @onready var clockPos := maze.local_to_map(maze.to_local(clock.global_position))
+@onready var uiClock := get_node("BottomBar/Clock") as Sprite2D
+@onready var uiClockLabel := get_node("BottomBar/Control/ClockLabel") as Label
 @onready var camera := get_node("Camera2D") as Camera2D
 
 var energy: int = 0
@@ -64,11 +66,11 @@ func _ready():
 			fog.set_cell(0, Vector2i(x, y), 0, Vector2i.ZERO)
 	
 	for x in range(mazeRect.position.x + 1, mazeRect.end.x - 1):
-		check_for_creature_origin(mazeRect, Vector2i(x, mazeRect.position.y), Vector2i.DOWN)
-		check_for_creature_origin(mazeRect, Vector2i(x, mazeRect.end.y - 1), Vector2i.UP)
+		check_for_creature_origin(Vector2i(x, mazeRect.position.y), Vector2i.DOWN)
+		check_for_creature_origin(Vector2i(x, mazeRect.end.y - 1), Vector2i.UP)
 	for y in range(mazeRect.position.y + 1, mazeRect.end.y - 1):
-		check_for_creature_origin(mazeRect, Vector2i(mazeRect.position.x, y), Vector2i.RIGHT)
-		check_for_creature_origin(mazeRect, Vector2i(mazeRect.end.x - 1, y), Vector2i.LEFT)
+		check_for_creature_origin(Vector2i(mazeRect.position.x, y), Vector2i.RIGHT)
+		check_for_creature_origin(Vector2i(mazeRect.end.x - 1, y), Vector2i.LEFT)
 	if creatureOrigins.is_empty():
 		get_node("CreatureTimer").queue_free()
 	
@@ -76,7 +78,7 @@ func _ready():
 	reveal_fog(fog.local_to_map(fog.to_local(originPos)), REVEAL_RADIUS_AROUND_WIRE)
 	reveal_fog(clockPos, REVEAL_RADIUS_AROUND_CLOCK)
 
-func check_for_creature_origin(mazeRect: Rect2i, cell: Vector2i, direction: Vector2i) -> void:
+func check_for_creature_origin(cell: Vector2i, direction: Vector2i) -> void:
 	if not maze.get_cell_tile_data(0, cell):
 		print("Found creature origin at ", cell, " with direction ", direction)
 		creatureOrigins.append(cell)
@@ -114,7 +116,7 @@ func _unhandled_key_input(event) -> void:
 func kill_wire_gnawers():
 	for node in get_tree().get_nodes_in_group(Creature.CREATURE_GROUP):
 		if node is Creature:
-			if node.gnawing and node.wire.has_active_wire(node.cell):
+			if uiClock.frame <= 0 or (node.gnawing and node.wire.has_active_wire(node.cell)):
 				var particles := creatureExplosionParticlesScene.instantiate() as CPUParticles2D
 				particles.emitting = true
 				particles.position = node.position
@@ -133,7 +135,7 @@ func set_energy(newEnergy: int) -> void:
 		var particles := energyUsedParticlesScene.instantiate() as CPUParticles2D
 		var particlesPerPixel := particles.amount / (particles.emission_rect_extents.x * 2)
 		var pixels := (float(energyUsed) / maxEnergy) * energyBarLength
-		particles.amount = particlesPerPixel * pixels
+		particles.amount = round(particlesPerPixel * pixels)
 		particles.emission_rect_extents.x = pixels / 2
 		var particlesCenter := energyBar.points[0] + Vector2(energyBarLength * (float(energy + newEnergy) / 2) / maxEnergy, 0)
 		particles.position = bottomBarParticlesContainer.to_local(energyBar.to_global(particlesCenter))
@@ -218,3 +220,18 @@ func _on_creature_ate_through(cell: Vector2i) -> void:
 
 func _on_particles_finished(particles: Node) -> void:
 	particles.queue_free()
+
+
+func _on_clock_second_passed() -> void:
+	set_energy(energy - 1)
+	uiClock.frame -= 1
+	uiClockLabel.text = str(uiClock.frame)
+	if uiClock.frame <= 0:
+		clock.ring()
+		(get_node("WinTimer") as Timer).start()
+		(get_node("CreatureTimer") as Timer).stop()
+		kill_wire_gnawers()
+
+func _on_win_timer_timeout() -> void:
+	print("yaye...")
+	get_tree().reload_current_scene()

@@ -40,7 +40,7 @@ libraries = {
 autoplay = "scuttle"
 
 [node name="GnawTimer" type="Timer" parent="."]
-wait_time = 0.2
+wait_time = 0.5
 
 [node name="GnawTimerSprite" type="Sprite2D" parent="."]
 z_index = 5

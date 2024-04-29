@@ -37,9 +37,9 @@
 - [x] 💙 Creature gnawing progress.
 - [x] 💙 Hold {Space} to unleash an electric surge attack
 - [x] 💜 Battery sprite
-- [ ] 💙 If the wire is connected to the clock and the wire has enough power, the clock starts ticking and the power
+- [x] 💙 If the wire is connected to the clock and the wire has enough power, the clock starts ticking and the power
   starts draining. The only way to stop this is to get disconnected.
-- [ ] 💙 If the clock is active for a total of 10 seconds, the level is won.
+- [x] 💙 If the clock is active for a total of 10 seconds, the level is won.
 - [ ] 💚 1 level
 - [ ] 💟 Publish `0.1.0`
 
