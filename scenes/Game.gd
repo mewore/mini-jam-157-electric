@@ -12,6 +12,8 @@ extends Node2D
 var energy: int = 0
 @export var maxEnergy: int = 20
 
+@onready var energyLabel = get_node("BottomBar/Control/EnergyLabel") as Label
+
 @onready var bottomBarParticlesContainer := get_node("BottomBar/EnergyParticles") as Node2D
 @export var energyUsedParticlesScene: PackedScene
 
@@ -32,9 +34,12 @@ var nextCreatureOrigin = 0
 @export var REVEAL_RADIUS_AROUND_WIRE := 2
 @export var REVEAL_RADIUS_AROUND_CLOCK := 1
 
+@export var ENERGY_PER_BATTERY_TICK := 2
+@export var INITIAL_ENERGY := 5
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	set_energy(5)
+	set_energy(INITIAL_ENERGY)
 	wire.maxGrowth = energy
 	
 	print("scene_file_path = ", scene_file_path)
@@ -75,6 +80,11 @@ func _process(delta):
 	pass
 
 func set_energy(newEnergy: int) -> void:
+	if newEnergy <= 0 and not wire.has_battery_supply():
+		print("YOW! Out of power...")
+		get_tree().reload_current_scene()
+		return
+		
 	if newEnergy < energy:
 		var energyUsed := energy - newEnergy
 		var particles := energyUsedParticlesScene.instantiate() as CPUParticles2D
@@ -101,9 +111,9 @@ func refresh_energy() -> void:
 		energyBar.points[0] + Vector2.RIGHT * (energyBarLength * float(energy - wire.previewLength) / maxEnergy),
 		energyBar.points[0] + Vector2.RIGHT * (energyBarLength * float(energy) / maxEnergy)
 	]
+	energyLabel.text = str(energy) + " / " + str(maxEnergy)
 
 func _on_wire_grow(newCells: Array[Vector2i]) -> void:
-	print("Wire grew by [", newCells.size(), "]!")
 	set_energy(energy - newCells.size())
 	for cell in newCells:
 		reveal_fog(cell, REVEAL_RADIUS_AROUND_WIRE)
@@ -113,11 +123,11 @@ func _on_wire_preview_changed() -> void:
 
 func _on_drain_timer_timeout() -> void:
 	for battery in wire.batteries:
-		if energy >= maxEnergy:
+		if energy + ENERGY_PER_BATTERY_TICK > maxEnergy:
 			break
 		if battery.withWire and battery.frame > 0:
 			battery.frame -= 1
-			set_energy(energy + 1)
+			set_energy(energy + ENERGY_PER_BATTERY_TICK)
 
 func reveal_fog(around: Vector2i, radius: int) -> void:
 	for dx in range(-radius, radius + 1):

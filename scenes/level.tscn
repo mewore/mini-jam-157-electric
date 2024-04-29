@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://qwg468kolvc0"]
+[gd_scene load_steps=14 format=3 uid="uid://qwg468kolvc0"]
 
 [ext_resource type="Script" path="res://scenes/Game.gd" id="1_5wj7g"]
 [ext_resource type="TileSet" uid="uid://cwip84gcbrfrd" path="res://environment/maze.tres" id="1_i0gun"]
@@ -11,6 +11,11 @@
 [ext_resource type="PackedScene" uid="uid://n87jpoe4elxg" path="res://entities/creature/creature_origin.tscn" id="6_078l2"]
 [ext_resource type="TileSet" uid="uid://brjmsxe57u6dt" path="res://environment/fog.tres" id="9_c3q1x"]
 [ext_resource type="PackedScene" uid="uid://dar6mmh7o7bsj" path="res://entities/clock/clock.tscn" id="11_5g6d4"]
+[ext_resource type="FontFile" path="res://ui/fonts/lunchds.ttf" id="11_8tiah"]
+
+[sub_resource type="Theme" id="Theme_028mw"]
+default_font = ExtResource("11_8tiah")
+default_font_size = 16
 
 [node name="Level" type="Node2D"]
 
@@ -63,35 +68,54 @@ centered = false
 region_enabled = true
 region_rect = Rect2(0, 0, 512, 3)
 
-[node name="EnergyBar" type="Line2D" parent="Game/BottomBar"]
-position = Vector2(96, 0)
+[node name="EnergyBarOutline" type="Line2D" parent="Game/BottomBar"]
+position = Vector2(60, 0)
 points = PackedVector2Array(16, 16, 256, 16)
-default_color = Color(0.423529, 0.929412, 0.929412, 1)
+width = 12.0
+default_color = Color(0.427451, 0.521569, 0.647059, 1)
+begin_cap_mode = 1
+end_cap_mode = 1
+
+[node name="EnergyBarBackground" type="Line2D" parent="Game/BottomBar"]
+position = Vector2(60, 0)
+points = PackedVector2Array(16, 16, 256, 16)
+default_color = Color(0.0509804, 0, 0.101961, 1)
+
+[node name="EnergyBar" type="Line2D" parent="Game/BottomBar"]
+position = Vector2(60, 0)
+points = PackedVector2Array(16, 16, 256, 16)
+default_color = Color(0.654902, 0.960784, 0.933333, 1)
 
 [node name="EnergyCostBar" type="Line2D" parent="Game/BottomBar"]
-position = Vector2(96, 0)
+position = Vector2(60, 0)
 points = PackedVector2Array(128, 16, 256, 16)
 default_color = Color(0.431373, 0.317647, 0.505882, 1)
 
-[node name="Label0" type="Node2D" parent="Game/BottomBar"]
-position = Vector2(88, 8)
-scale = Vector2(0.5, 0.5)
-
-[node name="Label" type="Label" parent="Game/BottomBar/Label0"]
-offset_right = 40.0
-offset_bottom = 23.0
-text = "0%"
-
-[node name="Label100" type="Node2D" parent="Game/BottomBar"]
-position = Vector2(360, 8)
-scale = Vector2(0.5, 0.5)
-
-[node name="Label2" type="Label" parent="Game/BottomBar/Label100"]
-offset_right = 40.0
-offset_bottom = 23.0
-text = "100%"
-
 [node name="EnergyParticles" type="Node2D" parent="Game/BottomBar"]
+
+[node name="Control" type="HBoxContainer" parent="Game/BottomBar"]
+offset_top = 4.0
+offset_right = 512.0
+offset_bottom = 28.0
+theme = SubResource("Theme_028mw")
+
+[node name="PaddingLeft" type="Control" parent="Game/BottomBar/Control"]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Game/BottomBar/Control"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.654902, 0.960784, 0.933333, 1)
+text = "Energy:"
+
+[node name="PaddingCenter" type="Control" parent="Game/BottomBar/Control"]
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+
+[node name="EnergyLabel" type="Label" parent="Game/BottomBar/Control"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.654902, 0.960784, 0.933333, 1)
+text = "50/50"
 
 [node name="DrainTimer" type="Timer" parent="Game"]
 wait_time = 0.25

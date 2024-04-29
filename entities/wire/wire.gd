@@ -32,9 +32,13 @@ const IS_LIT_UP_BIT = 1 << 2
 var cellLightUpEvents
 var cellGroupsToLightUp: Array = []
 
+var poweredCells: Array[Vector2i] = []
+var poweredCellsDict := {}
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	set_cell(LAYER, originPos, 0, Vector2i.ZERO)
+	refresh_powered_cells()
 	
 	batteries = []
 	for child in batteryContainer.get_children():
@@ -44,6 +48,12 @@ func _ready():
 func _process(delta):
 	preview_growth_to(local_to_map(get_local_mouse_position()))
 	pass
+
+func has_battery_supply() -> bool:
+	for battery in batteries:
+		if battery.withWire:
+			return true
+	return false
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("grow"):
@@ -55,10 +65,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		previewMap.clear()
 		lastPreviewPos = NONEXISTENT_MOUSE_POS
 		previewLength = 0
-		for battery in batteries:
-			if has_cell_at(self, local_to_map(battery.global_position)):
-				battery.withWire = true
-		refresh_cells_to_light_up()
+		refresh_powered_cells()
 		emit_signal("grow", pathToPos)
 
 func preview_growth_to(at: Vector2i) -> void:
@@ -79,7 +86,7 @@ func search_path_to(target: Vector2i) -> Array[Vector2i]:
 		return []
 	var parents := Dictionary()
 	var distance := Dictionary()
-	var queue: Array[Vector2i] = get_powered_cells()
+	var queue: Array[Vector2i] = poweredCells
 	for cell in queue:
 		parents[cell] = false
 		distance[cell] = 0
@@ -130,10 +137,7 @@ func remove_wire_at(at: Vector2i) -> void:
 	set_wire_cell(self, at, false)
 	previewMap.clear()
 	lastPreviewPos = NONEXISTENT_MOUSE_POS
-	refresh_cells_to_light_up()
-	var poweredCells := Dictionary()
-	for cell in get_powered_cells():
-		poweredCells[cell] = true
+	refresh_powered_cells()
 	for cell in get_used_cells(LAYER):
 		if cell not in poweredCells:
 			var coords = get_cell_atlas_coords(LAYER, cell)
@@ -165,11 +169,14 @@ func update_wire_cell(map: TileMap, at: Vector2i) -> void:
 	var atlasCoords := map.get_cell_atlas_coords(LAYER, at)
 	map.set_cell(LAYER, at, 0, Vector2i(atlasCol | (atlasCoords.x & IS_LIT_UP_BIT), atlasRow))
 
-func refresh_cells_to_light_up() -> void:
+func refresh_powered_cells() -> void:
 	var queue: Array[Vector2i] = [originPos]
 	var visited := Dictionary()
+	poweredCells = []
+	poweredCellsDict = {}
 	cellGroupsToLightUp = []
 	while queue:
+		poweredCells.append_array(queue)
 		var oldQueue = queue
 		var cellsToLightUp: Array[Vector2i] = []
 		queue = []
@@ -184,29 +191,19 @@ func refresh_cells_to_light_up() -> void:
 					queue.append(neighbor)
 		if cellsToLightUp:
 			cellGroupsToLightUp.append(cellsToLightUp)
+	
 	cellGroupsToLightUp.reverse()
-
-func get_powered_cells() -> Array[Vector2i]:
-	var queue: Array[Vector2i] = [originPos]
-	var visited := Dictionary()
-	var result: Array[Vector2i] = []
-	while queue:
-		result.append_array(queue)
-		var oldQueue = queue
-		queue = []
-		for cell in oldQueue:
-			for direction in NEIGHBOR_DIRECTIONS:
-				var neighbor = cell + direction
-				if neighbor not in visited and has_cell_at(self, neighbor):
-					visited[neighbor] = true
-					queue.append(neighbor)
-	return result
+	for cell in poweredCells:
+		poweredCellsDict[cell] = true
+	
+	for battery in batteries:
+		battery.withWire = has_active_wire(local_to_map(to_local(battery.global_position)))
 
 func has_active_wire(cell: Vector2i) -> bool:
-	return has_cell_at(self, cell) and get_cell_atlas_coords(LAYER, cell).x & IS_LIT_UP_BIT
+	return cell in poweredCellsDict
 
 func has_inactive_wire(cell: Vector2i) -> bool:
-	return has_cell_at(self, cell) and not (get_cell_atlas_coords(LAYER, cell).x & IS_LIT_UP_BIT)
+	return cell not in poweredCellsDict and has_cell_at(self, cell)
 
 func _on_light_up_timer_timeout() -> void:
 	if cellGroupsToLightUp.is_empty():
